@@ -9,8 +9,8 @@
           <div class="">{{ product.plan }}</div>
         </div>
       </div>
-      <div class="m-2">
-        <div class="border p-2 rounded text-xs text-grey">Alterar país</div>
+      <div class="">
+        <div class="border p-2 rounded text-xs">Alterar país</div>
       </div>
     </div>
     <div class="rounded-b py-3 px-4 bg-orange text-white font-bold text-sm flex">
