@@ -1,5 +1,6 @@
-# my-tentativa1
-
+# pyt
+Padrão de Componentização utilizado: Este padrão divide a aplicação em componentes independentes. Isso torna a aplicação mais reutilizável e fácil de manter.
+Atomic Design: Este padrão de design divide a interface do usuário em componentes pequenos e independentes. Isso torna a aplicação mais flexível e fácil de manter.
 ## Project setup
 ```
 npm install
