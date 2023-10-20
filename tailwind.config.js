@@ -12,7 +12,13 @@ module.exports = {
       secondary: '#CED4DA',
       lightOrange: '#FDF2E9'
     },
-    extend: {},
+    extend: {
+      backgroundImage: {
+        'hero-pattern': "url('@/assets/card.png')",
+        'mastercard': "url('@/assets/mastercard.svg')",
+        'visa': "url('@/assets/visa.svg')"
+      }
+    },
   },
   plugins: [],
 }

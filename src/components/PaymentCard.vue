@@ -37,6 +37,7 @@
                 placeholder="Digite somente números"
                 class="border-2 rounded p-2 border-secondary outline-orange"
                 autocomplete="false"
+                max-length="16"
                 v-model="cardnumber"
               >
             </div>
@@ -109,16 +110,43 @@
           </div>
         </form>
       </div>
-      <div class="w-full h-40 bg-orange">
-        <div class="border">
-          Aqui
-          {{ installment }}
-        </div>
+      <div class="w-full mt-5">
+        <Tilt>
+          <div class="border-2 rounded bg-hero-pattern h-auto p-2 flex flex-col justify-between" style="height: 250px;">
+            <div class="flex justify-between p-4 text-white">
+              <div class="rounded" style="background: #291933; width: 60px; height: 40px; opacity: 1;"></div>
+              <div :class="`bg-${flag}`">{{ flag }}</div>
+            </div>
+            <div class="text-white">
+              ####
+            </div>
+            <div class="flex justify-between py-4 px-10 text-white text-sm">
+              <div class="flex flex-col">
+                <div>Titular</div>
+                <div>Murilo Barros</div>
+              </div>
+              <div class="flex flex-col text-left">
+                <div>Validade</div>
+                <div>20/10</div>
+              </div>
+            </div>
+          </div>
+        </Tilt>
+      </div>
+    </div>
+    <div class="mt-10">
+      <div class="text-lg text-left font-bold">Detalhes da compra</div>
+      <div class="flex justify-between mt-2 text-sm font-bold">
+        <span>Nome do produto</span>
+        <span>R$ 50,00 / mês</span>
       </div>
     </div>
   </div>
 </template>
 <script>
+// Lib externa
+import Tilt from 'vanilla-tilt-vue'
+
 import iconCredit from '@/components/icons/iconCredit.vue'
 import iconPix from '@/components/icons/iconPix.vue'
 import iconBoleto from '@/components/icons/iconBoleto.vue'
@@ -126,7 +154,8 @@ export default {
   components: {
     iconCredit,
     iconPix,
-    iconBoleto
+    iconBoleto,
+    Tilt
   },
   data () {
     return {
@@ -136,6 +165,10 @@ export default {
         valid: {}
       },
       cardnumber: '',
+      flag: '',
+      cardName: '',
+      cvv: '',
+      cardCpf: '',
       validateMonth: "Janeiro",
       validateYear: "0000",
       installments: ["1x de R$ 50,00", "2x de R$ 25,00", "3x de R$ 16,66", "4x de R$ 12,50"],
@@ -147,6 +180,37 @@ export default {
     payment(itme) {
       console.log(itme)
       this.paymentChoise = itme
+    },
+  },
+  watch: {
+    cardnumber (val) {
+      if (val === undefined) {
+        return null;
+      }
+      const regexes = {
+        visa: ["4"],
+        mastercard: ["51","52","53","54","55"],
+        diners: ["300","301", "302", "303", "304", "305", "36", "38"],
+        elo: ["636368","438935","504175","451416","509048","509067","509049","509069","509050","509074","509068","509040", "509045","509051","509046","509066","509047","509042", "509052","509043","509064 ","509040", "36297", "5067","4576","4011"],
+        amex: ["34", "37"],
+        hipercard: ["60"]
+      };
+
+      // const regex = {
+      //   visa: /^4[0-9]{15}$/,
+      //   mastercard: /^(50|5[6-9]|6007|6220|6304|6703|6708|6759|676[1-3])|((5(([1-2]|[4-5])[0-9]{8}|0((1|6)([0-9]{7}))|3(0(4((0|[2-9])[0-9]{5})|([0-3]|[5-9])[0-9]{6})|[1-9][0-9]{7})))|((508116)\\d{4,10})|((502121)\\d{4,10})|((589916)\\d{4,10})|(2[0-9]{15})|(67[0-9]{14})|(506387)\\d{4,10})/,
+      //   diners: /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
+      //   amex: /^3[47][0-9]{13}$/,
+      //   hipercard: /^606282|^3841(?:[0|4|6]{1})0/,
+      //   elo: /^4011(78|79)|^43(1274|8935)|^45(1416|7393|763(1|2))|^50(4175|6699|67[0-6][0-9]|677[0-8]|9[0-8][0-9]{2}|99[0-8][0-9]|999[0-9])|^627780|^63(6297|6368|6369)|^65(0(0(3([1-3]|[5-9])|4([0-9])|5[0-1])|4(0[5-9]|[1-3][0-9]|8[5-9]|9[0-9])|5([0-2][0-9]|3[0-8]|4[1-9]|[5-8][0-9]|9[0-8])|7(0[0-9]|1[0-8]|2[0-7])|9(0[1-9]|[1-6][0-9]|7[0-8]))|16(5[2-9]|[6-7][0-9])|50(0[0-9]|1[0-9]|2[1-9]|[3-4][0-9]|5[0-8]))/,
+      // }
+
+      for (const brand in regexes) {
+        if (regexes[brand].test(val)) {
+          this.flag = brand
+          return brand
+        }
+      }
     }
   }
 }
