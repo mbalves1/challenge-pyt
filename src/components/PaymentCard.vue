@@ -26,7 +26,9 @@
       </div>
     </div>
 
-    <div class="sm:flex flex-col sm:flex-row justify-between gap-5">
+    <component v-if="paymentChoise !== 'credit'" :is="paymentChoise === 'pix' ? 'payment-pix' : 'payment-boleto'"></component>
+
+    <div v-if="paymentChoise === 'credit'" class="sm:flex flex-col sm:flex-row justify-between gap-5">
       <div class="w-full pr-4">
         <form autocomplete="off" id="Form">
           <div class="form-row">
@@ -85,7 +87,7 @@
                   </div>
                 </div>
                 <div class="flex flex-col">
-                  <label class="mb-1 mb-1 text-left text-sm font-bold">Validade</label>
+                  <label class="mb-1 mb-1 text-left text-sm font-bold">CVV</label>
                   <input
                     placeholder="CVV"
                     type="number"
@@ -137,7 +139,7 @@
     </div>
     <div class="mt-10">
       <div class="text-lg text-left font-bold">Detalhes da compra</div>
-      <div class="flex justify-between mt-2 text-sm font-bold">
+      <div class="flex justify-between text-sm font-bold my-5">
         <span>Nome do produto</span>
         <span>R$ 50,00 / mês</span>
       </div>
@@ -145,9 +147,11 @@
         <icon-credit-edit />
         <div class="text-left ml-2 text-sm">Essa cobrança aparecerá na sua fatura como: PAYT*NomeDoProduto</div>
       </div>
-      <div v-else>
-        <label>CPF/CNPJ (Para emissão de Nota Fiscal)</label>
-        <input class="border border-secondary">
+      <div v-else class="grid grid-cols-2 mt-2">
+        <div class="flex flex-col">
+          <label class="text-left">CPF/CNPJ (Para emissão de Nota Fiscal)</label>
+          <input class="border-2 p-2 border-secondary outline-orange rounded">
+        </div>
       </div>
       <div class="grid grid-cols-2 mt-6">
         <button class="w-full bg-orange rounded h-20 text-3xl text-white">Comprar Agora</button>
@@ -168,13 +172,20 @@ import iconCredit from '@/components/icons/iconCredit.vue'
 import iconCreditEdit from '@/components/icons/iconCreditEdit.vue'
 import iconPix from '@/components/icons/iconPix.vue'
 import iconBoleto from '@/components/icons/iconBoleto.vue'
+
+// Shared steps
+import PaymentPix from './stepspayments/PaymentPix.vue'
+import PaymentBoleto from './stepspayments/PaymentBoleto.vue'
+
 export default {
   components: {
     iconCredit,
     iconPix,
     iconBoleto,
     iconCreditEdit,
-    Tilt
+    Tilt,
+    PaymentPix,
+    PaymentBoleto
   },
   data () {
     return {

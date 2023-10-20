@@ -10,7 +10,8 @@ module.exports = {
       grey:  '#f6f6f6',
       red: '#FF0000',
       secondary: '#CED4DA',
-      lightOrange: '#FDF2E9'
+      lightOrange: '#FDF2E9',
+      icon: '#939598'
     },
     extend: {
       backgroundImage: {
