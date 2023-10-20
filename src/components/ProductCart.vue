@@ -1,6 +1,6 @@
 <template>
-  <div class="border rounded mt-3 mb-4">
-    <div class="flex justify-between p-4">
+  <div class="border-2 border-secondary rounded mt-3">
+    <div class="flex justify-between p-4 bg-white">
       <div class="mt-2 flex">
         <img src="../assets/product.png" alt="" class="h-52">
         <div class="flex flex-col items-start ml-5 justify-center">

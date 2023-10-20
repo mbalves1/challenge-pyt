@@ -6,17 +6,20 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    cep: ''
   },
   getters: {
   },
   mutations: {
+    GET_CEP(state, data) {
+      state.cep = data
+    }
   },
   actions: {
-    async getCep(_, payload) {
+    async getCep({ commit }, payload) {
       try {
-        console.log(payload)
         const response = await getCepApi(payload)
-
+        commit('GET_CEP', response)
         return response
       } catch (err) {
         console.error(err)
