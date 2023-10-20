@@ -27,7 +27,7 @@
               <input
                 id="email"
                 placeholder="Digite seu email"
-                class="border-2 Srounded p-2 bg-grey outline-orange"
+                class="border-2 rounded p-2 bg-grey outline-orange"
                 :class="validation.invalid.email ? 'border-red' : 'border-secondary'"
                 @change="validateEmail()"
                 v-model="email"
@@ -167,10 +167,6 @@
                   </select>
               </div>
             </div>
-
-            <!-- <div class="col-sm-12">
-              <button class="btn btn-primary" type="submit">Submit form</button>
-            </div> -->
           </div>
         </form>
         </div>
@@ -194,12 +190,8 @@ export default {
     disabled: false,
     ufs: [ "AC", "AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",],
     validation: {
-      invalid: {
-//        firstName: 'First name NOT OK!',
-      },
-      valid: {
-//        firstName: 'First name OK!',
-      },
+      invalid: {},
+      valid: {},
     }
   }),
   methods: {

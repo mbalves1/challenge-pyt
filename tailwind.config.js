@@ -9,7 +9,8 @@ module.exports = {
       orange: '#FF6905',
       grey:  '#f6f6f6',
       red: '#FF0000',
-      secondary: '#CED4DA'
+      secondary: '#CED4DA',
+      lightOrange: '#FDF2E9'
     },
     extend: {},
   },
