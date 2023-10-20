@@ -1,5 +1,5 @@
 <template>
-  <div class="border-2 border-secondary bg-white rounded p-6">
+  <div class="border-2 border-secondary bg-white rounded p-6 mb-10">
     <div class="flex justify-center gap-6 mb-6">
       <div
         class="border-2 rounded p-3 w-40 flex items-center justify-center cursor-pointer"
@@ -115,7 +115,8 @@
           <div class="border-2 rounded bg-hero-pattern h-auto p-2 flex flex-col justify-between" style="height: 250px;">
             <div class="flex justify-between p-4 text-white">
               <div class="rounded" style="background: #291933; width: 60px; height: 40px; opacity: 1;"></div>
-              <div :class="`bg-${flag}`">{{ flag }}</div>
+              <div class="bg-card-mastercard">{{ flag.type }}</div>
+              <img :src="cardnumber ? `@/assets/${flag.type}.svg` : ''" style="width: 50px;">
             </div>
             <div class="text-white">
               ####
@@ -140,14 +141,31 @@
         <span>Nome do produto</span>
         <span>R$ 50,00 / mês</span>
       </div>
+      <div v-if="paymentChoise === 'credit'" class="flex items-center">
+        <icon-credit-edit />
+        <div class="text-left ml-2 text-sm">Essa cobrança aparecerá na sua fatura como: PAYT*NomeDoProduto</div>
+      </div>
+      <div v-else>
+        <label>CPF/CNPJ (Para emissão de Nota Fiscal)</label>
+        <input class="border border-secondary">
+      </div>
+      <div class="grid grid-cols-2 mt-6">
+        <button class="w-full bg-orange rounded h-20 text-3xl text-white">Comprar Agora</button>
+      </div>
+
+      <div class="flex justify-center mt-10">
+        <img src="@/assets/safe.png">
+      </div>
     </div>
   </div>
 </template>
 <script>
 // Lib externa
 import Tilt from 'vanilla-tilt-vue'
+import creditCardType from 'credit-card-type'
 
 import iconCredit from '@/components/icons/iconCredit.vue'
+import iconCreditEdit from '@/components/icons/iconCreditEdit.vue'
 import iconPix from '@/components/icons/iconPix.vue'
 import iconBoleto from '@/components/icons/iconBoleto.vue'
 export default {
@@ -155,11 +173,12 @@ export default {
     iconCredit,
     iconPix,
     iconBoleto,
+    iconCreditEdit,
     Tilt
   },
   data () {
     return {
-      paymentChoise: '',
+      paymentChoise: 'credit',
       validation: {
         invalid: {},
         valid: {}
@@ -187,30 +206,8 @@ export default {
       if (val === undefined) {
         return null;
       }
-      const regexes = {
-        visa: ["4"],
-        mastercard: ["51","52","53","54","55"],
-        diners: ["300","301", "302", "303", "304", "305", "36", "38"],
-        elo: ["636368","438935","504175","451416","509048","509067","509049","509069","509050","509074","509068","509040", "509045","509051","509046","509066","509047","509042", "509052","509043","509064 ","509040", "36297", "5067","4576","4011"],
-        amex: ["34", "37"],
-        hipercard: ["60"]
-      };
-
-      // const regex = {
-      //   visa: /^4[0-9]{15}$/,
-      //   mastercard: /^(50|5[6-9]|6007|6220|6304|6703|6708|6759|676[1-3])|((5(([1-2]|[4-5])[0-9]{8}|0((1|6)([0-9]{7}))|3(0(4((0|[2-9])[0-9]{5})|([0-3]|[5-9])[0-9]{6})|[1-9][0-9]{7})))|((508116)\\d{4,10})|((502121)\\d{4,10})|((589916)\\d{4,10})|(2[0-9]{15})|(67[0-9]{14})|(506387)\\d{4,10})/,
-      //   diners: /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
-      //   amex: /^3[47][0-9]{13}$/,
-      //   hipercard: /^606282|^3841(?:[0|4|6]{1})0/,
-      //   elo: /^4011(78|79)|^43(1274|8935)|^45(1416|7393|763(1|2))|^50(4175|6699|67[0-6][0-9]|677[0-8]|9[0-8][0-9]{2}|99[0-8][0-9]|999[0-9])|^627780|^63(6297|6368|6369)|^65(0(0(3([1-3]|[5-9])|4([0-9])|5[0-1])|4(0[5-9]|[1-3][0-9]|8[5-9]|9[0-9])|5([0-2][0-9]|3[0-8]|4[1-9]|[5-8][0-9]|9[0-8])|7(0[0-9]|1[0-8]|2[0-7])|9(0[1-9]|[1-6][0-9]|7[0-8]))|16(5[2-9]|[6-7][0-9])|50(0[0-9]|1[0-9]|2[1-9]|[3-4][0-9]|5[0-8]))/,
-      // }
-
-      for (const brand in regexes) {
-        if (regexes[brand].test(val)) {
-          this.flag = brand
-          return brand
-        }
-      }
+      const type = creditCardType(val)
+      this.flag = type[0]
     }
   }
 }

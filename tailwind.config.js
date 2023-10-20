@@ -15,7 +15,7 @@ module.exports = {
     extend: {
       backgroundImage: {
         'hero-pattern': "url('@/assets/card.png')",
-        'mastercard': "url('@/assets/mastercard.svg')",
+        'card-mastercard': "url('@/assets/mastercard.svg')",
         'visa': "url('@/assets/visa.svg')"
       }
     },
