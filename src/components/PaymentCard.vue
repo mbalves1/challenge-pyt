@@ -1,6 +1,6 @@
 <template>
-  <div class="border-2 border-secondary bg-white rounded p-6 mb-10">
-    <div class="flex justify-center gap-6 mb-6">
+  <div class="border-2 border-secondary bg-white rounded p-2 sm:p-6 mb-10">
+    <div class="sm:flex sm:flex-row flex-col justify-center gap-6 mb-6">
       <div
         class="border-2 rounded p-3 w-40 flex items-center justify-center cursor-pointer"
         :class="paymentChoise === 'credit' ? 'border-orange bg-lightOrange' : 'border-secondary'"
@@ -28,10 +28,10 @@
 
     <component v-if="paymentChoise !== 'credit'" :is="paymentChoise === 'pix' ? 'payment-pix' : 'payment-boleto'"></component>
 
-    <div v-if="paymentChoise === 'credit'" class="sm:flex flex-col sm:flex-row justify-between gap-5">
-      <div class="w-full pr-4">
+    <div v-if="paymentChoise === 'credit'" class="gap-5 grid grid-cols-1 sm:grid-cols-2">
+      <div class="sm:pr-4">
         <form autocomplete="off" id="Form">
-          <div class="form-row">
+          <div class="">
             <div class="mb-3 flex flex-col justify-left">
               <label for="cardnumber" class="mb-1 text-left text-sm font-bold">Número do cartão</label>
               <input
@@ -62,11 +62,12 @@
                 type="number"
                 class="border-2 rounded p-2 border-secondary outline-orange"
                 v-model="cardCpf"
+                :loading="loading"
               >
             </div>
 
             <div class="mb-3 mt-4 flex flex-col justify-left">
-              <div class="flex">
+              <div class="flex flex-col sm:flex-row">
                 <div class="flex flex-col w-full">
                   <label class="mb-1 mb-1 text-left text-sm font-bold">Validade</label>
                   <div class="flex">
@@ -75,8 +76,8 @@
                       class="border-2 bg-white rounded p-2 border-secondary outline-orange mr-2"
                       v-model="validateMonth"
                     >
-                      <option v-for="(month, mx) in months" :key="mx">
-                        {{ month }}
+                      <option v-for="(month, mx) in months" :key="mx" :value="month.value">
+                        {{ month.label }}
                       </option>
                     </select>
                     <input
@@ -91,7 +92,7 @@
                   <input
                     placeholder="CVV"
                     type="number"
-                    class="border-2 rounded p-2 border-secondary outline-orange"
+                    class="border-2 rounded p-2 border-secondary outline-orange w-28"
                     v-model="cvv"
                   > 
                 </div>
@@ -116,21 +117,22 @@
         <Tilt>
           <div class="border-2 rounded bg-hero-pattern h-auto p-2 flex flex-col justify-between" style="height: 250px;">
             <div class="flex justify-between p-4 text-white">
-              <div class="rounded" style="background: #291933; width: 60px; height: 40px; opacity: 1;"></div>
+              <div class="rounded border border-white" style="background: #291933; width: 60px; height: 40px; opacity: 1;"></div>
               <div class="bg-card-mastercard">{{ flag.type }}</div>
               <img :src="cardnumber ? `@/assets/${flag.type}.svg` : ''" style="width: 50px;">
+              <img src="@/assets/mastercard.svg">
             </div>
-            <div class="text-white">
-              ####
+            <div class="text-white text-lg mr-20">
+              {{ cardnumber ? `#### #### #### #${cardnumber.substr(-3)}` : '#### #### #### ####'}}
             </div>
             <div class="flex justify-between py-4 px-10 text-white text-sm">
               <div class="flex flex-col">
                 <div>Titular</div>
-                <div>Murilo Barros</div>
+                <div class="font-bold">{{ cardName || 'João Silva'}}</div>
               </div>
               <div class="flex flex-col text-left">
                 <div>Validade</div>
-                <div>20/10</div>
+                <div class="font-bold">{{ `${validateMonth}/${validateYear}`}}</div>
               </div>
             </div>
           </div>
@@ -154,7 +156,7 @@
         </div>
       </div>
       <div class="grid grid-cols-2 mt-6">
-        <button class="w-full bg-orange rounded h-20 text-3xl text-white">Comprar Agora</button>
+        <button class="w-full bg-orange rounded h-20 text-3xl text-white" @click="loading != loading">Comprar Agora</button>
       </div>
 
       <div class="flex justify-center mt-10">
@@ -199,11 +201,24 @@ export default {
       cardName: '',
       cvv: '',
       cardCpf: '',
-      validateMonth: "Janeiro",
-      validateYear: "0000",
+      validateMonth: "01",
+      validateYear: "00",
       installments: ["1x de R$ 50,00", "2x de R$ 25,00", "3x de R$ 16,66", "4x de R$ 12,50"],
       installment: '',
-      months: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho","Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+      loading: false,
+      months: [{ label: "Janeiro", value: '01' },
+        { label: "Fevereiro", value: '02' },
+        { label: "Março", value: '03' },
+        { label: "Abril", value: '04' },
+        { label: "Maio", value: '05' },
+        { label: "Junho", value: '06' },
+        { label: "Julho", value: '07' },
+        { label: "Agosto", value: '08' },
+        { label: "Setembro", value: '09' },
+        { label: "Outubro", value: '10' },
+        { label: "Novembro", value: '11' },
+        { label: "Dezembro", value: '12' }
+      ]
     }
   },
   methods: {
