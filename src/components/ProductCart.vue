@@ -10,7 +10,7 @@
         </div>
       </div>
       <div class="">
-        <div class="border p-2 rounded text-xs">Alterar país</div>
+        <div class="border-2 p-2 border-secondary rounded text-xs">Alterar país</div>
       </div>
     </div>
     <div class="rounded-b py-3 px-4 bg-orange text-white font-bold text-sm flex">
