@@ -120,7 +120,7 @@
               <div class="rounded border border-white" style="background: #291933; width: 60px; height: 40px; opacity: 1;"></div>
               <div class="bg-card-mastercard">{{ flag.type }}</div>
               <img :src="cardnumber ? `@/assets/${flag.type}.svg` : ''" style="width: 50px;">
-              <img src="@/assets/mastercard.svg">
+              <!-- <img src="@/assets/mastercard.svg"> -->
             </div>
             <div class="text-white text-lg mr-20">
               {{ cardnumber ? `#### #### #### #${cardnumber.substr(-3)}` : '#### #### #### ####'}}
