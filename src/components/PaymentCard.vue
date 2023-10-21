@@ -33,15 +33,24 @@
         <form autocomplete="off" id="Form">
           <div class="">
             <div class="mb-3 flex flex-col justify-left">
-              <label for="cardnumber" class="mb-1 text-left text-sm font-bold">Número do cartão</label>
+              <!-- <label class="mb-1 text-left text-sm font-bold">Número do cartão</label>
               <input
-                id="cardnumber"
+                type="number"
                 placeholder="Digite somente números"
                 class="border-2 rounded p-2 border-secondary outline-orange"
-                autocomplete="false"
-                max-length="16"
+                maxlength="16"
                 v-model="cardnumber"
-              >
+              > -->
+
+              <PTextField
+                type-input="number"
+                label="Número do cartão"
+                placeholder="Digite somente números"
+                @inputvalue="validateCardNumber"
+                :hasError="validation.invalid.cardnumber"
+              ></PTextField>
+
+              <PErrorMessage :validate="validation.invalid.cardnumber"></PErrorMessage>
             </div>
 
             <div class="mb-3 mt-4 flex flex-col justify-left">
@@ -82,6 +91,7 @@
                     </select>
                     <input
                       placeholder="Ano"
+                      type="number"
                       class="border-2 w-20 rounded p-2 bg-white border-secondary outline-orange"
                       v-model="validateYear"
                     >
@@ -118,9 +128,9 @@
           <div class="border-2 rounded bg-hero-pattern h-auto p-2 flex flex-col justify-between" style="height: 250px;">
             <div class="flex justify-between p-4 text-white">
               <div class="rounded border border-white" style="background: #291933; width: 60px; height: 40px; opacity: 1;"></div>
-              <div class="bg-card-mastercard">{{ flag.type }}</div>
-              <img :src="cardnumber ? `@/assets/${flag.type}.svg` : ''" style="width: 50px;">
-              <!-- <img src="@/assets/mastercard.svg"> -->
+              <div v-if="flag.type !== 'mastercard' || flag.type !== 'visa'">{{ flag.type === 'mastercard' || flag.type === 'visa' ? '' : flag.type }}</div>
+              <img v-if="flag.type === 'mastercard'" src="@/assets/mastercard.svg" class="w-10">
+              <img v-if="flag.type === 'visa'" src="@/assets/visa.svg" class="w-10">
             </div>
             <div class="text-white text-lg mr-20">
               {{ cardnumber ? `#### #### #### #${cardnumber.substr(-3)}` : '#### #### #### ####'}}
@@ -178,6 +188,8 @@ import iconBoleto from '@/components/icons/iconBoleto.vue'
 // Shared steps
 import PaymentPix from './stepspayments/PaymentPix.vue'
 import PaymentBoleto from './stepspayments/PaymentBoleto.vue'
+import PErrorMessage from './shared/PErrorMessage.vue'
+import PTextField from './shared/PTextField.vue'
 
 export default {
   components: {
@@ -187,7 +199,9 @@ export default {
     iconCreditEdit,
     Tilt,
     PaymentPix,
-    PaymentBoleto
+    PaymentBoleto,
+    PErrorMessage,
+    PTextField
   },
   data () {
     return {
@@ -226,6 +240,20 @@ export default {
       console.log(itme)
       this.paymentChoise = itme
     },
+    validateCardNumber(item) {
+      this.cardnumber = item;
+      console.log(this.cardnumber.length !== 16)
+      if (!this.cardnumber) {
+        this.validation.invalid.cardnumber = 'Por favor, insira um número de cartão.'
+      } else {
+        delete this.validation.invalid.cardnumber;
+      }
+      if (this.cardnumber.length === 16) {
+        delete this.validation.invalid.cardnumber;
+      } else {
+        this.validation.invalid.cardnumber = 'Por favor, insira um número de cartão válido.'
+      }
+    }
   },
   watch: {
     cardnumber (val) {

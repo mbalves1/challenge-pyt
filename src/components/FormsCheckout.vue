@@ -5,43 +5,27 @@
         <form autocomplete="off" id="Form">
           <div class="form-row">
             <div class="col-md-4 mb-3 flex flex-col justify-left">
-              <label for="firstName" class="mb-1 text-left text-sm font-bold">Nome completo</label>
-              <input
-                id="firstName"
-                placeholder="Digite o nome completo"
-                class="border-2 rounded p-2 bg-grey outline-orange"
-                :class="validation.invalid.firstName ? 'border-red' : 'border-secondary'"
-                autocomplete="false"
-                @change="validateName()"
-                v-model="firstName"
-              />
+              <PTextField
+                label="Nome completo"
+                placeholder="Digite seu nome completo"
+                @inputvalue="validateName"
+                :hasError="validation.invalid.firstName"
+              ></PTextField>
 
-              <div class="text-red text-xs text-right" v-if="validation.valid.firstName">{{ validation.valid.firstName }}</div>
-
-              <div class="text-red text-xs text-right" v-if="validation.invalid.firstName">{{ validation.invalid.firstName }}</div>
+              <PErrorMessage :validate="validation.invalid.firstName"></PErrorMessage>
 
             </div>
 
-            <div class="col-md-4 mb-3 mt-4 flex flex-col justify-left">
-              <label for="email" class="mb-1 mb-1 text-left text-sm font-bold">E-mail</label>
-              <input
-                id="email"
+            <div class="col-md-4 mb-3 flex flex-col justify-left">
+              <PTextField
+                label="Email"
                 placeholder="Digite seu email"
-                class="border-2 rounded p-2 bg-grey outline-orange"
-                :class="validation.invalid.email ? 'border-red' : 'border-secondary'"
-                @change="validateEmail()"
-                v-model="email"
-              />
-              <div
-                class="valid-feedback text-red text-xs text-right"
-                v-if="validation.valid.email"
-              >{{ validation.valid.email }}</div>
+                @inputvalue="validateEmail"
+                :hasError="validation.invalid.email"
+              ></PTextField>
 
-              <div
-                class="invalid-feedback text-red text-xs text-right"
-                v-if="validation.invalid.email">
-                {{ validation.invalid.email }}
-              </div>
+              <PErrorMessage :validate="validation.invalid.email"></PErrorMessage>
+
             </div>
 
             <div class="flex grid grid-cols-2 gap-8 w-full  mt-4">
@@ -57,16 +41,8 @@
                   @input="phone = formatarPhone(phone)"
                   >
 
-                  <div
-                    class="valid-feedback text-red text-xs text-right"
-                    v-if="validation.valid.phone"
-                  >{{ validation.valid.phone }}</div>
+                  <PErrorMessage :validate="validation.invalid.phone"></PErrorMessage>
 
-                  <div
-                    class="invalid-feedback text-red text-xs text-right"
-                    v-if="validation.invalid.phone">
-                    {{ validation.invalid.phone }}
-                  </div>
               </div>
               <div class="col-6 flex flex-col">
                 <label class="mb-1 text-left text-sm font-bold" for="tel">CEP</label>
@@ -80,9 +56,8 @@
                   @input="cep = formatarCep(cep)"
                 >
 
-                <div class="text-red text-xs text-right" v-if="validation.valid.cep">{{ validation.valid.cep }}</div>
+                <PErrorMessage :validate="validation.invalid.cep"></PErrorMessage>
 
-                <div class="text-red text-xs text-right" v-if="validation.invalid.cep">{{ validation.invalid.cep }}</div>
               </div>
             </div>
 
@@ -99,9 +74,8 @@
                 @change="validateEndereco()"
               >
 
-              <div class="text-red text-xs text-right" v-if="validation.valid.endereco">{{ validation.valid.endereco }}</div>
+              <PErrorMessage :validate="validation.invalid.endereco"></PErrorMessage>
 
-              <div class="text-red text-xs text-right" v-if="validation.invalid.endereco">{{ validation.invalid.endereco }}</div>
             </div>
 
             <div class="flex grid grid-cols-2 gap-8 w-full mt-4">
@@ -127,14 +101,14 @@
                 placeholder="Digite seu bairro"
                 class="outline-orange border-2 rounded p-2 bg-grey"
                 :class="validation.invalid.bairro ? 'border-red' : 'border-secondary'"
-                v-on:focus="clearValidation('bairro')"
+                @focus="clearValidation('bairro')"
                 v-model="bairro"
                 :disabled="disabled"
                 @change="validateBairro()"
               >
-              <div class="text-red text-xs text-right" v-if="validation.valid.bairro">{{ validation.valid.bairro }}</div>
 
-              <div class="text-red text-xs text-right" v-if="validation.invalid.bairro">{{ validation.invalid.bairro }}</div>
+              <PErrorMessage :validate="validation.invalid.bairro"></PErrorMessage>
+
             </div>
 
             <div class="flex grid grid-cols-2 gap-8 w-full mt-4">
@@ -149,9 +123,8 @@
                   @change="validateCidade()"
                   v-model="cidade">
 
-                <div class="text-red text-xs text-right" v-if="validation.valid.cidade">{{ validation.valid.cidade }}</div>
+                <PErrorMessage :validate="validation.invalid.cidade"></PErrorMessage>
 
-                <div class="text-red text-xs text-right" v-if="validation.invalid.cidade">{{ validation.invalid.cidade }}</div>
               </div>
               <div class="col-6 flex flex-col">
                 <label class="mb-1 text-left text-sm font-bold" for="tel">Estado</label>
@@ -175,8 +148,11 @@
 </template>
 <script>
 import store from '../store';
+import PErrorMessage from './shared/PErrorMessage.vue';
+import PTextField from './shared/PTextField.vue';
 
 export default {
+  components: { PTextField, PErrorMessage },
   data: () => ({
     firstName: '',
     email: '',
@@ -210,15 +186,17 @@ export default {
         this.disabled = true
       }
     },
-    validateName() {
-      if (!this.firstName) {
+    validateName(item) {
+      this.firstName = item
+      if (!item) {
         this.validation.invalid.firstName = 'Por favor, insira seu nome.';
       } else {
         delete this.validation.invalid.firstName;
       }
       this.$forceUpdate();
     },
-    validateEmail() {
+    validateEmail(item) {
+      this.email = item
       if (!this.email) {
         this.validation.invalid.email = 'Por favor, insira seu email.';
       } else if (!/^([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$)/.test(this.email)) {
@@ -245,6 +223,9 @@ export default {
       } else {
         delete this.validation.invalid.phone;
       }
+      if (this.phone.length !== 15) {
+        this.validation.invalid.phone = 'Por favor, insira um telefone válido!.';
+      } 
       this.$forceUpdate();
     },
     validateCidade() {
@@ -263,7 +244,8 @@ export default {
       }
       this.$forceUpdate();
     },
-    validateEndereco() {
+    validateEndereco(item) {
+      this.endereco = item
       if (!this.endereco) {
         this.validation.invalid.endereco = 'Por favor, insira uma enderço!.';
       } else {
