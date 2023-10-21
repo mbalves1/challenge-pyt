@@ -33,15 +33,6 @@
         <form autocomplete="off" id="Form">
           <div class="">
             <div class="mb-3 flex flex-col justify-left">
-              <!-- <label class="mb-1 text-left text-sm font-bold">Número do cartão</label>
-              <input
-                type="number"
-                placeholder="Digite somente números"
-                class="border-2 rounded p-2 border-secondary outline-orange"
-                maxlength="16"
-                v-model="cardnumber"
-              > -->
-
               <PTextField
                 type-input="number"
                 label="Número do cartão"
@@ -53,26 +44,27 @@
               <PErrorMessage :validate="validation.invalid.cardnumber"></PErrorMessage>
             </div>
 
-            <div class="mb-3 mt-4 flex flex-col justify-left">
-              <label for="cardName" class="mb-1 mb-1 text-left text-sm font-bold">Titular do cartão</label>
-              <input
-                id="cardName"
+            <div class="mb-3 flex flex-col justify-left">
+              <PTextField
+                label="Titular do cartão"
                 placeholder="Digite o nome impresso no cartão"
-                class="border-2 rounded p-2 border-secondary outline-orange"
-                v-model="cardName"
-              >
+                @inputvalue="validateCardName"
+                :hasError="validation.invalid.cardName"
+              ></PTextField>
+
+              <PErrorMessage :validate="validation.invalid.cardName"></PErrorMessage>
             </div>
 
-            <div class="mb-3 mt-4 flex flex-col justify-left">
-              <label for="cardCpf" class="mb-1 mb-1 text-left text-sm font-bold">CPF/CNPJ do titular</label>
-              <input
-                id="cardCpf"
+            <div class="mb-3 flex flex-col justify-left">              
+              <PTextField
+                type-input="number"
+                label="CPF/CNPJ do titular"
                 placeholder="Para emissão da nota fiscal"
-                type="number"
-                class="border-2 rounded p-2 border-secondary outline-orange"
-                v-model="cardCpf"
-                :loading="loading"
-              >
+                @inputvalue="validateCardCpf"
+                :hasError="validation.invalid.cardCpf"
+              ></PTextField>
+
+              <PErrorMessage :validate="validation.invalid.cardCpf"></PErrorMessage>
             </div>
 
             <div class="mb-3 mt-4 flex flex-col justify-left">
@@ -98,13 +90,17 @@
                   </div>
                 </div>
                 <div class="flex flex-col">
-                  <label class="mb-1 mb-1 text-left text-sm font-bold">CVV</label>
-                  <input
-                    placeholder="CVV"
-                    type="number"
-                    class="border-2 rounded p-2 border-secondary outline-orange w-28"
-                    v-model="cvv"
-                  > 
+                  <div class="w-28">
+                    <PTextField
+                      type-input="number"
+                      label="CVV"
+                      placeholder="CVV"
+                      @inputvalue="validateCVV"
+                      :hasError="validation.invalid.cvv"
+                    ></PTextField>
+
+                    <PErrorMessage :validate="validation.invalid.cvv"></PErrorMessage>
+                  </div>
                 </div>
               </div>
             </div>
@@ -207,7 +203,12 @@ export default {
     return {
       paymentChoise: 'credit',
       validation: {
-        invalid: {},
+        invalid: {
+          cvv: '',
+          cardCpf: '',
+          cardnumber: '',
+          cardName: ''
+        },
         valid: {}
       },
       cardnumber: '',
@@ -218,7 +219,7 @@ export default {
       validateMonth: "01",
       validateYear: "00",
       installments: ["1x de R$ 50,00", "2x de R$ 25,00", "3x de R$ 16,66", "4x de R$ 12,50"],
-      installment: '',
+      installment: '1x de R$ 50,00',
       loading: false,
       months: [{ label: "Janeiro", value: '01' },
         { label: "Fevereiro", value: '02' },
@@ -242,16 +243,34 @@ export default {
     },
     validateCardNumber(item) {
       this.cardnumber = item;
-      console.log(this.cardnumber.length !== 16)
       if (!this.cardnumber) {
         this.validation.invalid.cardnumber = 'Por favor, insira um número de cartão.'
+      } else if (this.cardnumber.length === 16) {
+        this.validation.invalid.cardnumber = 'Por favor, insira um número de cartão válido.'
       } else {
         delete this.validation.invalid.cardnumber;
       }
-      if (this.cardnumber.length === 16) {
-        delete this.validation.invalid.cardnumber;
+    },
+    validateCardName(item) {
+      this.cardName = item
+      if (!this.cardName) {
+        this.validation.invalid.cardName = 'Por favor, insira um nome do titular.'
       } else {
-        this.validation.invalid.cardnumber = 'Por favor, insira um número de cartão válido.'
+        delete this.validation.invalid.cardName;
+      }
+    },
+    validateCardCpf(item) {
+      this.cardCpf = item
+      if (!this.cardCpf) {
+        this.validation.invalid.cardCpf = 'Por favor, insira um CPF do titular.'
+      } else {
+        delete this.validation.invalid.cardCpf;
+      }
+    },
+    validateCVV(item) {
+      this.cvv = item
+      if (!this.cvv || !/^\d{3}$/.test(this.cvv)) {
+        this.validation.invalid.cvv = 'Por favor, insira um cvv válido.'
       }
     }
   },

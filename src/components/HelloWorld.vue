@@ -2,8 +2,8 @@
   <div class="">
     <div class="w-7/12 mx-auto gap-5 flex flex-col">
       <product-cart />
-      <forms-checkout />
-      <payment-card />
+      <FormsCheckout></FormsCheckout>
+      <PaymentCard></PaymentCard>
     </div>
   </div>
 </template>
