@@ -124,7 +124,12 @@
           <div class="border-2 rounded bg-hero-pattern h-auto p-2 flex flex-col justify-between" style="height: 250px;">
             <div class="flex justify-between p-4 text-white">
               <div class="rounded border border-white" style="background: #291933; width: 60px; height: 40px; opacity: 1;"></div>
-              <div v-if="flag.type !== 'mastercard' || flag.type !== 'visa'">{{ flag.type === 'mastercard' || flag.type === 'visa' ? '' : flag.type }}</div>
+              <div
+                v-if="flag.type !== 'mastercard'
+                  || flag.type !== 'visa'"
+                >
+                  {{ flag.type === 'mastercard' || flag.type === 'visa' ? '' : flag.type }}
+              </div>
               <img v-if="flag.type === 'mastercard'" src="@/assets/mastercard.svg" class="w-10">
               <img v-if="flag.type === 'visa'" src="@/assets/visa.svg" class="w-10">
             </div>
@@ -158,11 +163,19 @@
       <div v-else class="grid grid-cols-2 mt-2">
         <div class="flex flex-col">
           <label class="text-left">CPF/CNPJ (Para emissão de Nota Fiscal)</label>
-          <input class="border-2 p-2 border-secondary outline-orange rounded">
+          <input
+            class="border-2 p-2 border-secondary outline-orange rounded" 
+            @blur="AddPaymentInfo(paymentChoise)"
+            @change="validateCpfandboleto()"
+            v-model="cpfandboleto"
+          >
+{{ validation.invalid.cpfandboleto }}
+          <div v-if="validation.invalid.cpfandboleto" class="text-red text-xs text-right">{{ validation.invalid.cpfandboleto }}</div>
+
         </div>
       </div>
       <div class="grid grid-cols-2 mt-6">
-        <button class="w-full bg-orange rounded h-20 text-3xl text-white" @click="loading != loading">Comprar Agora</button>
+        <button class="w-full bg-orange rounded h-20 text-3xl text-white" @click="buyNow">Comprar Agora</button>
       </div>
 
       <div class="flex justify-center mt-10">
@@ -207,7 +220,8 @@ export default {
           cvv: '',
           cardCpf: '',
           cardnumber: '',
-          cardName: ''
+          cardName: '',
+          cpfandboleto: ''
         },
         valid: {}
       },
@@ -216,6 +230,7 @@ export default {
       cardName: '',
       cvv: '',
       cardCpf: '',
+      cpfandboleto: '',
       validateMonth: "01",
       validateYear: "00",
       installments: ["1x de R$ 50,00", "2x de R$ 25,00", "3x de R$ 16,66", "4x de R$ 12,50"],
@@ -237,40 +252,106 @@ export default {
     }
   },
   methods: {
-    payment(itme) {
-      console.log(itme)
-      this.paymentChoise = itme
+    payment(item) {
+      this.paymentChoise = item
     },
     validateCardNumber(item) {
       this.cardnumber = item;
       if (!this.cardnumber) {
         this.validation.invalid.cardnumber = 'Por favor, insira um número de cartão.'
-      } else if (this.cardnumber.length === 16) {
+      } else if (this.cardnumber.length !== 16) {
         this.validation.invalid.cardnumber = 'Por favor, insira um número de cartão válido.'
       } else {
+        this.validation.valid.cardnumber = true
         delete this.validation.invalid.cardnumber;
       }
+      this.AddPaymentInfo()
     },
     validateCardName(item) {
       this.cardName = item
       if (!this.cardName) {
         this.validation.invalid.cardName = 'Por favor, insira um nome do titular.'
       } else {
+        this.validation.valid.cardName = true
         delete this.validation.invalid.cardName;
       }
+      this.AddPaymentInfo()
     },
     validateCardCpf(item) {
       this.cardCpf = item
-      if (!this.cardCpf) {
+      if (!item) {
         this.validation.invalid.cardCpf = 'Por favor, insira um CPF do titular.'
+        this.validation.valid.cardCpf = false
       } else {
+        this.validation.valid.cardCpf = true
         delete this.validation.invalid.cardCpf;
       }
+      this.AddPaymentInfo()
     },
     validateCVV(item) {
       this.cvv = item
-      if (!this.cvv || !/^\d{3}$/.test(this.cvv)) {
+      if (!this.cvv) {
         this.validation.invalid.cvv = 'Por favor, insira um cvv válido.'
+      } else {
+        this.validation.valid.cvv = true
+        delete this.validation.invalid.cvv;
+      }
+
+      this.AddPaymentInfo()
+    },
+    validateCpfandboleto() {
+      console.log(this.cpfandboleto.length)
+      if (this.cpfandboleto.length !== 11) {
+        this.validation.invalid.cpfandboleto = 'Por favor, insira um cpf válido.'
+      } else {
+        delete this.validation.invalid.cpfandboleto;
+      }
+    },
+    payload() {
+      return {
+        cardName: this.cardName,
+        cardnumber: this.cardnumber,
+        cardCpf: this.cardCpf,
+        cvv: this.cvv
+      }
+    },
+    Purchase() {
+      const payload = this.payload()
+      if (this.paymentChoise === 'credit') {
+        if (
+          this.validation.valid.cardName &&
+          this.validation.valid.cardnumber &&
+          this.validation.valid.cardCpf &&
+          this.validation.valid.cvv
+        ) {
+          console.log('Purchase', payload)
+        } else {
+          console.log('PurchaseFail', payload)
+        }
+      } else {
+        if (this.cpfandboleto) {
+          console.log('Purchase cpf:', this.cpfandboleto)
+        } else {
+          console.log('PurchaseFail', this.cpfandboleto)
+        }
+      }
+    },
+    buyNow() {
+      this.Purchase()
+    },
+    AddPaymentInfo(paymentChoise) {
+      if (paymentChoise !== 'credit' && this.cpfandboleto) {
+        console.log('AddPaymentInfo', this.paymentChoise, this.cpfandboleto)
+      } else {
+        if (
+          this.validation.valid.cardName &&
+          this.validation.valid.cardnumber &&
+          this.validation.valid.cardCpf &&
+          this.validation.valid.cvv
+        ) {
+          const payload = this.payload()
+          console.log('AddPaymentInfo', payload)
+        }
       }
     }
   },

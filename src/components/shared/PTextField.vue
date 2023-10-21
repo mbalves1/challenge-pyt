@@ -10,6 +10,7 @@
       @blur="changeValue()"
       :disabled="disabled"
       :type="typeInput"
+      @focus="InitiateCheckout"
       v-model="valueInput"
     >
   </div>
@@ -63,7 +64,14 @@ export default {
   methods: {
     changeValue() {
       this.$emit('inputvalue', this.valueInput)
+      this.$emit('AddToCart', this.label)
     },
+    InitiateCheckout() {
+      if (this.label === 'Nome completo') {
+        this.$emit('InitiateCheckout', true)
+      }
+      
+    }
   }
 }
 </script>

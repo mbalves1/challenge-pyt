@@ -9,6 +9,7 @@
                 label="Nome completo"
                 placeholder="Digite seu nome completo"
                 @inputvalue="validateName"
+                @InitiateCheckout="InitiateCheckout"
                 :hasError="validation.invalid.firstName"
               ></PTextField>
 
@@ -21,6 +22,7 @@
                 label="Email"
                 placeholder="Digite seu email"
                 @inputvalue="validateEmail"
+                @AddToCart="AddToCart"
                 :hasError="validation.invalid.email"
               ></PTextField>
 
@@ -39,6 +41,7 @@
                   @change="validatePhone()"
                   v-model="phone"
                   @input="phone = formatarPhone(phone)"
+                  @blur="AddToCart('Telefone')"
                   >
 
                   <PErrorMessage :validate="validation.invalid.phone"></PErrorMessage>
@@ -54,6 +57,7 @@
                   v-model="cep"
                   @change="validateCep()"
                   @input="cep = formatarCep(cep)"
+                  @blur="FillAddress('CEP')"
                 >
 
                 <PErrorMessage :validate="validation.invalid.cep"></PErrorMessage>
@@ -81,11 +85,20 @@
             <div class="flex grid grid-cols-2 gap-8 w-full mt-4">
               <div class="col-6 flex flex-col">
                 <label class="mb-1 text-left text-sm font-bold" for="tel">Numero</label><div>
-                  <div class="border-2 border-secondary rounded flex items-center h-11">
-                    <input type="number" placeholder="Número" class="w-10 sm:w-40 p-2 bg-grey text-sm focus:outline-none outline-orange">
+                  <div :class="validation.invalid.numberAdress ? 'border-red' : 'border-secondary'" class="border-2 rounded flex items-center h-11">
+                    <input
+                      type="number"
+                      placeholder="Número"
+                      class="w-10 sm:w-40 p-2 bg-grey text-sm focus:outline-none outline-orange"
+                      @change="validateNum()"
+                      v-model="numberAdress"
+                      @blur="FillAddress('Numero')"
+                    >
                     <input type="checkbox" class="w-4 h-4 text-orange bg-orange border border-orange " v-model="notNumber">
                     <span class="text-xs ml-2">Sem número</span>
+
                   </div>
+                  <PErrorMessage :validate="validation.invalid.numberAdress"></PErrorMessage>
                 </div>
               </div>
               <div class="col-6 flex flex-col">
@@ -120,7 +133,7 @@
                   class="border-2 rounded p-2 bg-grey outline-orange" 
                   :class="validation.invalid.cidade ? 'border-red' : 'border-secondary'"
                   :disabled="disabled"
-                  @change="validateCidade()"
+                  @change="validateCidade"
                   v-model="cidade">
 
                 <PErrorMessage :validate="validation.invalid.cidade"></PErrorMessage>
@@ -161,6 +174,7 @@ export default {
     bairro: '',
     cidade: '',
     uf: '',
+    numberAdress: '',
     phone: '',
     notNumber: false,
     disabled: false,
@@ -236,6 +250,14 @@ export default {
       }
       this.$forceUpdate();
     },
+    validateNum() {
+      if (!this.numberAdress) {
+        this.validation.invalid.numberAdress = 'Por favor, insira uma número!.';
+      } else {
+        delete this.validation.invalid.numberAdress;
+      }
+      this.$forceUpdate();
+    },
     validateBairro() {
       if (!this.bairro) {
         this.validation.invalid.bairro = 'Por favor, insira uma bairro!.';
@@ -276,6 +298,41 @@ export default {
       this.validation.valid[field] = '';
       this.validation.invalid[field] = '';
       this.$forceUpdate();
+    },
+    InitiateCheckout() {
+      const payload = {
+        firstName: this.firstName,
+        email: this.email,
+        cep: this.cep,
+        endereco: this.endereco,
+        bairro: this.bairro,
+        cidade: this.cidade,
+        uf: this.uf,
+        phone: this.phone,
+      }
+      console.log("InitiateCheckout: Disparando console no focus Nome do usuário", payload)
+    },
+    payload() {
+      return {
+        firstName: this.firstName || '',
+        email: this.email || '',
+        cep: this.cep || '',
+        endereco: this.endereco || '',
+        bairro: this.bairro || '',
+        cidade: this.cidade || '',
+        uf: this.uf || '',
+        phone: this.phone || '',
+      }
+    },
+    AddToCart(event) {
+      if (this.firstName && (this.email !== '' || this.phone !== '')) {
+        console.log(`AddToCart: ${this.firstName} e ${event},`, this.payload())
+      }
+    },
+    FillAddress() {
+      if (this.cep && this.numberAdress) {
+        console.log(`FillAddress:`, this.payload())
+      }
     }
   },
   watch: {
@@ -284,7 +341,7 @@ export default {
     },
     cidade(val) {
       if (!val) this.disabled = false
-    }
+    },
   }
 }
 </script>
