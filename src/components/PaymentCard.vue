@@ -167,9 +167,9 @@
         <div class="flex flex-col">
           <label class="text-left">CPF/CNPJ (Para emissão de Nota Fiscal)</label>
           <input
-            class="border-2 p-2 border-secondary outline-orange rounded" 
-            @blur="AddPaymentInfo(paymentChoise)"
-            @change="validateCpfandboleto()"
+            class="border-2 p-2 outline-orange rounded" 
+            :class="validation.invalid.cpfandboleto ? 'border-red' : 'border-secondary'"
+            @blur="validateCpfandboleto(paymentChoise)"
             v-model="cpfandboleto"
             v-mask="'###.###.###-##'"
           >
@@ -301,12 +301,13 @@ export default {
 
       this.AddPaymentInfo()
     },
-    validateCpfandboleto() {
+    validateCpfandboleto(params) {
       if (this.cpfandboleto.length !== 14) {
         this.validation.invalid.cpfandboleto = 'Por favor, insira um cpf válido.'
       } else {
         delete this.validation.invalid.cpfandboleto;
       }
+      this.AddPaymentInfo(params)
     },
     payload() {
       return {
@@ -366,7 +367,6 @@ export default {
       this.flag = type[0]
     },
     cpfandboleto() {
-      console.log(this.cpfandboleto)
       if (this.cpfandboleto.length !== 14) {
         this.validation.invalid.cpfandboleto = 'Por favor, insira um cpf válido.'
       } else {
