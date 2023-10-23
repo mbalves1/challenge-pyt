@@ -2,8 +2,8 @@
   <div class="">
     <div class="w-7/12 mx-auto gap-5 flex flex-col">
       <product-cart />
-      <FormsCheckout></FormsCheckout>
-      <PaymentCard></PaymentCard>
+      <FormsCheckout :validPayment="validForm"></FormsCheckout>
+      <PaymentCard @checkPayment="validPayment"></PaymentCard>
     </div>
   </div>
 </template>
@@ -18,6 +18,23 @@ export default {
     ProductCart,
     FormsCheckout,
     PaymentCard
+  },
+  data() {
+    return {
+      validForm: false
+    }
+  },
+  methods: {
+    validPayment() {
+      this.validForm = !this.validForm
+    }
+  },
+  watch: {
+  checkPayment: function () {
+    console.log('O evento check-payment foi ouvido!');
+  },
+  validForm() {
   }
+}
 }
 </script>

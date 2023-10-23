@@ -38,10 +38,9 @@
                   placeholder="(00) x0000-0000"
                   class="outline-orange border-2 rounded p-2 bg-grey"
                   :class="validation.invalid.phone ? 'border-red' : 'border-secondary'"
-                  @change="validatePhone()"
+                  @blur="validatePhone('Telefone')"
                   v-model="phone"
-                  @input="phone = formatarPhone(phone)"
-                  @blur="AddToCart('Telefone')"
+                  v-mask="'(##) ##### ####'"
                   >
 
                   <PErrorMessage :validate="validation.invalid.phone"></PErrorMessage>
@@ -50,14 +49,12 @@
               <div class="col-6 flex flex-col">
                 <label class="mb-1 text-left text-sm font-bold" for="tel">CEP</label>
                 <input
-                  type="text"
                   placeholder="Digite seu CEP"
                   class="outline-orange border-2 rounded p-2 bg-grey"
                   :class="validation.invalid.cep ? 'border-red' : 'border-secondary'"
                   v-model="cep"
-                  @change="validateCep()"
-                  @input="cep = formatarCep(cep)"
-                  @blur="FillAddress('CEP')"
+                  @blur="validateCep('CEP')"
+                  v-mask="'#####-###'"
                 >
 
                 <PErrorMessage :validate="validation.invalid.cep"></PErrorMessage>
@@ -75,7 +72,7 @@
                 v-on:focus="clearValidation('endereco')"
                 v-model="endereco"
                 :disabled="disabled"
-                @change="validateEndereco()"
+                @blur="validateEndereco()"
               >
 
               <PErrorMessage :validate="validation.invalid.endereco"></PErrorMessage>
@@ -90,11 +87,14 @@
                       type="number"
                       placeholder="Número"
                       class="w-10 sm:w-40 p-2 bg-grey text-sm focus:outline-none outline-orange"
-                      @change="validateNum()"
+                      @blur="validateNum('Numero')"
                       v-model="numberAdress"
-                      @blur="FillAddress('Numero')"
                     >
-                    <input type="checkbox" class="w-4 h-4 text-orange bg-orange border border-orange " v-model="notNumber">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 text-orange bg-orange border border-orange " 
+                      @change="validateNotNum"
+                      v-model="notNumber">
                     <span class="text-xs ml-2">Sem número</span>
 
                   </div>
@@ -103,7 +103,11 @@
               </div>
               <div class="col-6 flex flex-col">
                 <label class="mb-1 text-left text-sm font-bold" for="tel">Complemento</label>
-                <input type="text" placeholder="Digite seu complemento" class="outline-orange border-2 border-secondary rounded p-2 bg-grey">
+                <input
+                  type="text"
+                  placeholder="Digite seu complemento"
+                  class="outline-orange border-2 border-secondary rounded p-2 bg-grey"
+                  v-model="complement">
               </div>
             </div>
 
@@ -117,7 +121,7 @@
                 @focus="clearValidation('bairro')"
                 v-model="bairro"
                 :disabled="disabled"
-                @change="validateBairro()"
+                @blur="validateBairro()"
               >
 
               <PErrorMessage :validate="validation.invalid.bairro"></PErrorMessage>
@@ -133,7 +137,7 @@
                   class="border-2 rounded p-2 bg-grey outline-orange" 
                   :class="validation.invalid.cidade ? 'border-red' : 'border-secondary'"
                   :disabled="disabled"
-                  @change="validateCidade"
+                  @blur="validateCidade"
                   v-model="cidade">
 
                 <PErrorMessage :validate="validation.invalid.cidade"></PErrorMessage>
@@ -166,6 +170,11 @@ import PTextField from './shared/PTextField.vue';
 
 export default {
   components: { PTextField, PErrorMessage },
+  props:{
+    validPayment: {
+      type: Boolean
+    }
+  },
   data: () => ({
     firstName: '',
     email: '',
@@ -173,6 +182,7 @@ export default {
     endereco: '',
     bairro: '',
     cidade: '',
+    complement: '',
     uf: '',
     numberAdress: '',
     phone: '',
@@ -180,7 +190,15 @@ export default {
     disabled: false,
     ufs: [ "AC", "AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",],
     validation: {
-      invalid: {},
+      invalid: {
+        cep: '',
+        firstName: '',
+        email: '',
+        endereco: '',
+        bairro: '',
+        cidade: '',
+        uf: ''
+      },
       valid: {},
     }
   }),
@@ -220,7 +238,7 @@ export default {
       }
       this.$forceUpdate();
     },
-    validateCep() {
+    validateCep(field) {
       if (!this.cep) {
         this.validation.invalid.cep = 'Por favor, insira um cep válido!.';
       } else if (!/^[0-9]{5}-[0-9]{3}$/.test(this.cep)) {
@@ -229,9 +247,10 @@ export default {
         delete this.validation.invalid.cep;
         this.getCep()
       }
+      this.FillAddress(field)
       this.$forceUpdate();
     },
-    validatePhone() {
+    validatePhone(item) {
       if (!this.phone) {
         this.validation.invalid.phone = 'Por favor, insira um telefone válido!.';
       } else {
@@ -239,7 +258,8 @@ export default {
       }
       if (this.phone.length !== 15) {
         this.validation.invalid.phone = 'Por favor, insira um telefone válido!.';
-      } 
+      }
+      this.AddToCart(item)
       this.$forceUpdate();
     },
     validateCidade() {
@@ -250,12 +270,13 @@ export default {
       }
       this.$forceUpdate();
     },
-    validateNum() {
+    validateNum(field) {
       if (!this.numberAdress) {
         this.validation.invalid.numberAdress = 'Por favor, insira uma número!.';
       } else {
         delete this.validation.invalid.numberAdress;
       }
+      this.FillAddress(field)
       this.$forceUpdate();
     },
     validateBairro() {
@@ -275,24 +296,10 @@ export default {
       }
       this.$forceUpdate();
     },
-    formatarCep(cep) {
-      cep = cep.replace(/\D/g, '');
-
-      if (cep.length > 5) {
-        cep = cep.substring(0, 5) + '-' + cep.substring(5);
+    validateNotNum() {
+      if (this.notNumber) {
+        delete this.validation.invalid.numberAdress;
       }
-
-      return cep;
-    },
-    formatarPhone(phone) {
-      phone = phone.replace(/\D/g, '');
-      if (phone.length === 11) {
-        phone = `(${phone.substring(0, 2)}) ${phone.substring(2, 7)}-${phone.substring(7)}`;
-      } else if (phone.length === 10) {
-        phone = phone.substring(0, 2) + '-' + phone.substring(2);
-      }
-
-      return phone;
     },
     clearValidation: function(field) {
       this.validation.valid[field] = '';
@@ -307,6 +314,8 @@ export default {
         endereco: this.endereco,
         bairro: this.bairro,
         cidade: this.cidade,
+        numberAdress: this.numberAdress,
+        complement: this.complement,
         uf: this.uf,
         phone: this.phone,
       }
@@ -322,6 +331,8 @@ export default {
         cidade: this.cidade || '',
         uf: this.uf || '',
         phone: this.phone || '',
+        complement: this.complement,
+        numberAdress: this.numberAdress
       }
     },
     AddToCart(event) {
@@ -342,6 +353,20 @@ export default {
     cidade(val) {
       if (!val) this.disabled = false
     },
+    validPayment() {
+      if (this.validation.invalid.firstName === '' ||
+        this.validation.invalid.email === '' ||
+        this.validation.invalid.cep === '' ||
+        this.validation.invalid.phone === '' ||
+        this.validation.invalid.cidade === '') {
+          this.validation.invalid.firstName === '' ? this.validateName() : ''
+          this.validation.invalid.email === '' ? this.validateEmail() : ''
+          this.validation.invalid.phone === '' ? this.validatePhone('Telefone') : ''
+          this.validation.invalid.cidade === '' ? this.validateCidade() : ''
+          this.validation.invalid.cep === '' ? this.validateCep('CEP') : ''
+          scrollTo(0, 100)
+        }
+    }
   }
 }
 </script>

@@ -1,5 +1,6 @@
 <template>
   <div class="col-md-4 mb-3 flex flex-col justify-left">
+
     <label class="mb-1 text-left text-sm font-bold">{{ label }}</label>
     <input
       :placeholder="placeholder"
@@ -20,6 +21,8 @@
 export default {
   data: () => ({
     valueInput: '',
+    maskValue: '',
+    cpfMask: ''
   }),
   props: {
     label: {
@@ -57,7 +60,6 @@ export default {
   },
   computed: {
     bgClass() {
-
       return this.hasBackgroundColor ? 'bg-grey' : 'bg-white'
     }
   },
