@@ -30,7 +30,7 @@
 
     <div v-if="paymentChoise === 'credit'" class="gap-5 grid grid-cols-1 sm:grid-cols-2">
       <div class="sm:pr-4">
-        <form autocomplete="off" id="Form">
+        <form id="Form">
           <div class="">
             <div class="mb-3 flex flex-col justify-left">
               <PTextField
@@ -55,14 +55,16 @@
               <PErrorMessage :validate="validation.invalid.cardName"></PErrorMessage>
             </div>
 
-            <div class="mb-3 flex flex-col justify-left">              
-              <PTextField
-                type-input="number"
-                label="CPF/CNPJ do titular"
+            <div class="mb-3 flex flex-col justify-left">
+              <label class="mb-1 mb-1 text-left text-sm font-bold">CPF/CNPJ do titular</label>
+              <input
                 placeholder="Para emissão da nota fiscal"
-                @inputvalue="validateCardCpf"
-                :hasError="validation.invalid.cardCpf"
-              ></PTextField>
+                class="border-2 rounded p-2 bg-grey outline-orange"
+                :class="
+                  validation.invalid.cardCpf ? 'border-red' : 'border-secondary'"
+                v-model="cardCpf"
+                v-mask="'###.###.###-##'"
+              >
 
               <PErrorMessage :validate="validation.invalid.cardCpf"></PErrorMessage>
             </div>
@@ -85,6 +87,7 @@
                       placeholder="Ano"
                       type="number"
                       class="border-2 w-20 rounded p-2 bg-white border-secondary outline-orange"
+                      v-mask="'##'"
                       v-model="validateYear"
                     >
                   </div>
@@ -168,8 +171,9 @@
             @blur="AddPaymentInfo(paymentChoise)"
             @change="validateCpfandboleto()"
             v-model="cpfandboleto"
+            v-mask="'###.###.###-##'"
           >
-{{ validation.invalid.cpfandboleto }}
+
           <div v-if="validation.invalid.cpfandboleto" class="text-red text-xs text-right">{{ validation.invalid.cpfandboleto }}</div>
 
         </div>
@@ -277,11 +281,9 @@ export default {
       }
       this.AddPaymentInfo()
     },
-    validateCardCpf(item) {
-      this.cardCpf = item
-      if (!item) {
+    validateCardCpf() {
+      if (this.cardCpf === '') {
         this.validation.invalid.cardCpf = 'Por favor, insira um CPF do titular.'
-        this.validation.valid.cardCpf = false
       } else {
         this.validation.valid.cardCpf = true
         delete this.validation.invalid.cardCpf;
@@ -300,8 +302,7 @@ export default {
       this.AddPaymentInfo()
     },
     validateCpfandboleto() {
-      console.log(this.cpfandboleto.length)
-      if (this.cpfandboleto.length !== 11) {
+      if (this.cpfandboleto.length !== 14) {
         this.validation.invalid.cpfandboleto = 'Por favor, insira um cpf válido.'
       } else {
         delete this.validation.invalid.cpfandboleto;
@@ -337,6 +338,7 @@ export default {
       }
     },
     buyNow() {
+      this.$emit("checkPayment", true)
       this.Purchase()
     },
     AddPaymentInfo(paymentChoise) {
@@ -362,6 +364,23 @@ export default {
       }
       const type = creditCardType(val)
       this.flag = type[0]
+    },
+    cpfandboleto() {
+      console.log(this.cpfandboleto)
+      if (this.cpfandboleto.length !== 14) {
+        this.validation.invalid.cpfandboleto = 'Por favor, insira um cpf válido.'
+      } else {
+        delete this.validation.invalid.cpfandboleto;
+      }
+    },
+    cardCpf() {
+      if (this.cardCpf.length !== 14) {
+        this.validation.invalid.cardCpf = 'Por favor, insira um CPF do titular.'
+      } else {
+        this.validation.valid.cardCpf = true
+        delete this.validation.invalid.cardCpf;
+      }
+      this.AddPaymentInfo()
     }
   }
 }
