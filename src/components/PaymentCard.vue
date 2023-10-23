@@ -341,6 +341,17 @@ export default {
     buyNow() {
       this.$emit("checkPayment", true)
       this.Purchase()
+      if (this.validation.valid.cardName &&
+          this.validation.valid.cardnumber &&
+          this.validation.valid.cardCpf &&
+          this.validation.valid.cvv) {
+            return
+          } else {
+            this.validateCardNumber()
+            this.validateCardName()
+            this.validateCardCpf()
+            this.validateCpfandboleto()
+          }
     },
     AddPaymentInfo(paymentChoise) {
       if (paymentChoise !== 'credit' && this.cpfandboleto) {
