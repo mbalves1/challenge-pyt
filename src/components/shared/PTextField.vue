@@ -12,6 +12,7 @@
       :disabled="disabled"
       :type="typeInput"
       @focus="InitiateCheckout"
+      v-mask="mask"
       v-model="valueInput"
     >
   </div>
@@ -53,6 +54,9 @@ export default {
     hasBackgroundColor: {
       type: Boolean,
       default: true
+    },
+    mask: {
+      type: String
     }
   },
   created() {

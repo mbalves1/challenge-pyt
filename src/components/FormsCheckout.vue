@@ -69,7 +69,6 @@
                 placeholder="Digite seu endereco"
                 class="outline-orange border-2 rounded p-2 bg-grey"
                 :class="validation.invalid.endereco ? 'border-red' : 'border-secondary'"
-                v-on:focus="clearValidation('endereco')"
                 v-model="endereco"
                 :disabled="disabled"
                 @blur="validateEndereco()"
@@ -118,7 +117,6 @@
                 placeholder="Digite seu bairro"
                 class="outline-orange border-2 rounded p-2 bg-grey"
                 :class="validation.invalid.bairro ? 'border-red' : 'border-secondary'"
-                @focus="clearValidation('bairro')"
                 v-model="bairro"
                 :disabled="disabled"
                 @blur="validateBairro()"
@@ -256,6 +254,7 @@ export default {
       } else {
         delete this.validation.invalid.phone;
       }
+
       if (this.phone.length !== 15) {
         this.validation.invalid.phone = 'Por favor, insira um telefone válido!.';
       }

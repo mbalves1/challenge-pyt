@@ -34,7 +34,7 @@
           <div class="">
             <div class="mb-3 flex flex-col justify-left">
               <PTextField
-                type-input="number"
+                mask="#### #### #### ####"
                 label="Número do cartão"
                 placeholder="Digite somente números"
                 @inputvalue="validateCardNumber"
@@ -263,7 +263,7 @@ export default {
       this.cardnumber = item;
       if (!this.cardnumber) {
         this.validation.invalid.cardnumber = 'Por favor, insira um número de cartão.'
-      } else if (this.cardnumber.length !== 16) {
+      } else if (this.cardnumber.length !== 19) {
         this.validation.invalid.cardnumber = 'Por favor, insira um número de cartão válido.'
       } else {
         this.validation.valid.cardnumber = true
