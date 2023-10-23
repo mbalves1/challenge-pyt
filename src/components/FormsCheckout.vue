@@ -358,12 +358,16 @@ export default {
         this.validation.invalid.email === '' ||
         this.validation.invalid.cep === '' ||
         this.validation.invalid.phone === '' ||
+        this.validation.invalid.bairro === '' ||
         this.validation.invalid.cidade === '') {
-          this.validation.invalid.firstName === '' ? this.validateName() : ''
-          this.validation.invalid.email === '' ? this.validateEmail() : ''
-          this.validation.invalid.phone === '' ? this.validatePhone('Telefone') : ''
-          this.validation.invalid.cidade === '' ? this.validateCidade() : ''
-          this.validation.invalid.cep === '' ? this.validateCep('CEP') : ''
+          this.validateName()
+          this.validateEmail()
+          this.validateCep()
+          this.validatePhone()
+          this.validateCidade()
+          this.validateNum()
+          this.validateBairro()
+          this.validateNotNum()
           scrollTo(0, 100)
         }
     }
