@@ -95,7 +95,7 @@
                 <div class="flex flex-col">
                   <div class="w-28">
                     <PTextField
-                      type-input="number"
+                      mask="###"
                       label="CVV"
                       placeholder="CVV"
                       @inputvalue="validateCVV"
@@ -292,7 +292,7 @@ export default {
     },
     validateCVV(item) {
       this.cvv = item
-      if (!this.cvv) {
+      if (!item) {
         this.validation.invalid.cvv = 'Por favor, insira um cvv válido.'
       } else {
         this.validation.valid.cvv = true
@@ -351,6 +351,7 @@ export default {
             this.validateCardName()
             this.validateCardCpf()
             this.validateCpfandboleto()
+            this.validateCVV()
           }
     },
     AddPaymentInfo(paymentChoise) {
@@ -382,6 +383,12 @@ export default {
         this.validation.invalid.cpfandboleto = 'Por favor, insira um cpf válido.'
       } else {
         delete this.validation.invalid.cpfandboleto;
+      }
+    },
+    cvv() {
+      if (!this.cvv) {
+        console.log(this.cvv)
+        delete this.validation.invalid.cvv
       }
     },
     cardCpf() {

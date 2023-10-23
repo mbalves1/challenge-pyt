@@ -117,9 +117,9 @@
                 placeholder="Digite seu bairro"
                 class="outline-orange border-2 rounded p-2 bg-grey"
                 :class="validation.invalid.bairro ? 'border-red' : 'border-secondary'"
-                v-model="bairro"
+                @blur="validateBairro"
                 :disabled="disabled"
-                @blur="validateBairro()"
+                v-model="bairro"
               >
 
               <PErrorMessage :validate="validation.invalid.bairro"></PErrorMessage>
@@ -286,8 +286,7 @@ export default {
       }
       this.$forceUpdate();
     },
-    validateEndereco(item) {
-      this.endereco = item
+    validateEndereco() {
       if (!this.endereco) {
         this.validation.invalid.endereco = 'Por favor, insira uma enderço!.';
       } else {
@@ -359,8 +358,8 @@ export default {
         this.validation.invalid.phone === '' ||
         this.validation.invalid.bairro === '' ||
         this.validation.invalid.cidade === '') {
-          this.validateName()
-          this.validateEmail()
+          this.validateName(this.firstName)
+          this.validateEmail(this.email)
           this.validateCep()
           this.validatePhone()
           this.validateCidade()
